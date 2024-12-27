@@ -1,34 +1,12 @@
-import pickle
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 import pytesseract
 import pdfplumber
 import re
-from contextlib import asynccontextmanager
+import joblib
 
 app = FastAPI()
-
-# Initialize model variable at the global level
-loaded_model = None
-
-# Use lifespan to load the model at startup
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global loaded_model
-    try:
-        # Load the model at startup
-        with open('./models/svm_model.pkl', 'rb') as model_file:
-            loaded_model = pickle.load(model_file)
-        print("Model loaded successfully.")
-        yield
-    except Exception as e:
-        print(f"Error loading model: {e}")
-    finally:
-        print("Shutdown process complete.")
-        # Any cleanup can go here (if needed)
-
-app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,6 +15,8 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
+
+loaded_model = joblib.load('./models/svm_model.pkl')
 
 def extract_abstract_from_text(text: str) -> str:
     """
@@ -51,9 +31,7 @@ def extract_abstract_from_text(text: str) -> str:
     return match.group(1).strip() if match else "Abstract section not found."
 
 @app.post("/predict/")
-async def extract_abstract(uploaded_file: UploadFile = File(...)):
-    if loaded_model is None:
-        return {"error": "Model is not loaded yet. Please try again."}
+async def extract_abstract(uploaded_file: UploadFile):
 
     try:
         # Extract text from PDF or Image
@@ -73,9 +51,9 @@ async def extract_abstract(uploaded_file: UploadFile = File(...)):
         # Use the extracted abstract for prediction
         prediction_input = abstract if abstract else full_text
         prediction = loaded_model.predict([prediction_input])  # Pass the extracted text as input
-        
-        print('Prediction:', prediction)
 
-        return {"result": prediction[0]}  # Adjust as necessary for your model output
+        result = prediction[0].item()
+        print(result)
+        return {"result": result}  # Adjust as necessary for your model output
     except Exception as e:
         return {"error": str(e)}

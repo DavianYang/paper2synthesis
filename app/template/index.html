@@ -11,7 +11,6 @@
             font-family: 'Roboto', sans-serif;
         }
 
-        /* Drag-down animation */
         .drag-down {
             animation: drag-down 1s ease-in-out infinite alternate;
         }
@@ -25,50 +24,69 @@
             }
         }
 
-        /* Result box */
         .result-box {
-            width: 150px;
-            height: 150px;
+            min-width: 8em;
+            min-height: 8em;
+            height: auto;
+            width: auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            font-size: 1.25em;
             font-weight: 600;
             border: 2px dotted;
             border-radius: 8px;
             transition: all 0.3s ease;
+            text-align: center;
         }
 
         .result-green {
-            border-color: rgba(34, 197, 94, 1); /* green */
-            background-color: rgba(34, 197, 94, 0.2); /* light green */
-            color: rgba(34, 197, 94, 1); /* green text */
+            border-color: #22c55e;
+            background-color: #22c55e33;
+            color: #22c55e;
         }
 
         .result-red {
-            border-color: rgba(239, 68, 68, 1); /* red */
-            background-color: rgba(239, 68, 68, 0.2); /* light red */
-            color: rgba(239, 68, 68, 1); /* red text */
+            border-color: #ef4444;
+            background-color: #ef444433;
+            color: #ef4444;
         }
 
         .result-gray {
-            border-color: rgba(107, 114, 128, 1); /* gray */
-            background-color: rgba(229, 231, 235, 1); /* light gray */
-            color: rgba(107, 114, 128, 1); /* gray text */
+            border-color: #6b7280;
+            background-color: #e5e7eb;
+            color: #6b7280;
         }
+
+        .file-upload-box {
+            background: radial-gradient(circle, #c7cad0 10%, transparent 10%) 0 0,
+              radial-gradient(circle, #c7cad0 10%, transparent 10%) 20px 20px,
+              radial-gradient(circle, #c7cad0 10%, transparent 10%) 40px 40px;
+            background-size: 60px 60px;
+            /* height: 100vh; */
+            margin: 0;
+        }
+
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="w-full max-w-4xl mx-auto grid grid-cols-3 gap-8">
         <!-- File Upload Container -->
         <div class="bg-white rounded-lg shadow-xl p-8 col-span-2">
-            <!-- Header -->
             <header class="mb-6">
-                <h1 class="text-2xl font-semibold text-gray-800">Upload Document</h1>
-                <p class="text-sm text-gray-500 mt-1">Upload a research paper to analyze its suitability for inclusion.</p>
+                <h1 class="text-2xl font-semibold text-gray-800">Evidence Synthesis</h1>
+                <p class="text-sm text-gray-500 mt-1">Upload a research paper and select the analysis model.</p>
             </header>
+
+            <!-- Model Selection -->
+            <div class="mb-4">
+                <label for="modelSelect" class="block text-sm font-medium text-gray-700">Select Model</label>
+                <select id="modelSelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 mt-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option value="binary">Binary Classification</option>
+                    <option value="multilabel">Multi-Label Classification</option>
+                </select>
+            </div>
     
-            <!-- Drag-Down Animation -->
             <div class="text-center mb-4">
                 <div class="text-gray-400 drag-down inline-block">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -76,9 +94,10 @@
                     </svg>
                 </div>
             </div>
+                
     
             <!-- File Upload Section -->
-            <div class="border-2 border-dotted border-gray-400 rounded-lg p-6 text-center bg-gray-50 hover:bg-gray-200 transition shadow-sm">
+            <div class="file-upload-box border-2 border-dotted border-gray-400 rounded-lg p-6 text-center bg-gray-50 hover:bg-gray-200 transition shadow-sm">
                 <p class="text-gray-600 text-sm mb-4">Drag and drop your document here, or</p>
                 <label for="fileInput" class="inline-block text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 px-4 py-2 rounded-md cursor-pointer transition">
                     Select File
@@ -86,70 +105,86 @@
                 <input id="fileInput" type="file" class="hidden" />
             </div>
     
-            <!-- Upload Button -->
             <button id="uploadBtn" 
                 class="mt-6 w-full py-3 px-4 bg-gray-700 text-white font-medium rounded-md shadow-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition">
                 Upload & Analyze
             </button>
     
-            <!-- Loading Animation -->
             <div id="loading" class="hidden mt-4 flex items-center justify-center">
                 <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-gray-500 border-opacity-50"></div>
                 <p class="ml-3 text-sm text-gray-600">Analyzing your document...</p>
             </div>
         </div>
     
-        <!-- Result Container -->
         <div class="flex items-center justify-center p-8 col-span-1">
             <div id="resultMessage" class="result-box result-gray">Pending</div>
         </div>
     </div>
     
-
     <script>
         const fileInput = document.getElementById('fileInput');
+        const modelSelect = document.getElementById('modelSelect');
         const uploadBtn = document.getElementById('uploadBtn');
         const loadingDiv = document.getElementById('loading');
         const resultMessage = document.getElementById('resultMessage');
 
         uploadBtn.addEventListener('click', async () => {
             resultMessage.textContent = 'Pending';
-            resultMessage.className = 'result-box result-gray'; // Reset to gray
-            loadingDiv.classList.remove('hidden'); // Show loading animation
+            resultMessage.className = 'result-box result-gray';
+            loadingDiv.classList.remove('hidden');
 
             if (!fileInput.files[0]) {
                 alert('Please select a file before uploading.');
-                loadingDiv.classList.add('hidden'); // Hide loading
+                loadingDiv.classList.add('hidden');
                 return;
             }
+
+            const selectedModel = modelSelect.value;
+            const endpoint = selectedModel === 'binary' 
+                ? 'http://127.0.0.1:8000/predict_binary/' 
+                : 'http://127.0.0.1:8000/predict_multilabel/';
 
             const formData = new FormData();
             formData.append('uploaded_file', fileInput.files[0]);
 
             try {
-                const response = await fetch('http://127.0.0.1:8000/predict/', {
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     body: formData,
                 });
 
                 if (!response.ok) {
-                    throw new Error("Server error: ${response.statusText}");
+                    throw new Error(`Server error: ${response.statusText}`);
                 }
 
                 const data = await response.json();
 
-                if (data.error) {
-                    resultMessage.textContent = 'No';
-                    resultMessage.className = 'result-box result-red';
-                } else {
+
+                if (selectedModel === 'binary') {
                     resultMessage.textContent = data.result === 1 ? 'Yes' : 'No';
                     resultMessage.className = data.result === 1 ? 'result-box result-green' : 'result-box result-red';
+                } else {
+                    const labels = {
+                        0: "Coastal and marine Ecosystems",
+                        1: "Human and managed",
+                        2: "Mountains, snow and ice",
+                        3: "Rivers, lakes, and soil moisture",
+                        4: "Terrestrial ES"
+                    }
+
+                    let result = []
+                    data.result.forEach(element => {
+                        result.push(labels[element])
+                    });
+
+                    resultMessage.textContent = result.join(',');
+                    resultMessage.className = 'result-box result-green';
                 }
             } catch (error) {
                 resultMessage.textContent = 'Error';
                 resultMessage.className = 'result-box result-red';
             } finally {
-                loadingDiv.classList.add('hidden'); // Hide loading animation
+                loadingDiv.classList.add('hidden');
             }
         });
     </script>

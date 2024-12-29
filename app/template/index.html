@@ -38,6 +38,7 @@
             border-radius: 8px;
             transition: all 0.3s ease;
             text-align: center;
+            padding: 1em;
         }
 
         .result-green {
@@ -128,6 +129,55 @@
         const loadingDiv = document.getElementById('loading');
         const resultMessage = document.getElementById('resultMessage');
 
+        async function fetchData(endpoint, formData, selectedModel) {
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                updateResultMessage(data, selectedModel);
+            } catch (error) {
+                displayError();
+            } finally {
+                hideLoadingIndicator();
+            }
+        }
+
+        function updateResultMessage(data, selectedModel) {
+            if (selectedModel === 'binary') {
+                const isPositive = data.result === 1;
+                resultMessage.textContent = isPositive ? 'Yes' : 'No';
+                resultMessage.className = `result-box ${isPositive ? 'result-green' : 'result-red'}`;
+            } else {
+                const labels = {
+                    0: "Coastal and marine Ecosystems",
+                    1: "Human and managed",
+                    2: "Mountains, snow and ice",
+                    3: "Rivers, lakes, and soil moisture",
+                    4: "Terrestrial ES",
+                };
+
+                const result = data.result.map(element => labels[element] || "Unknown");
+                resultMessage.textContent = result.join(', ');
+                resultMessage.className = 'result-box result-green';
+            }
+        }
+
+        function displayError() {
+            resultMessage.textContent = 'Error';
+            resultMessage.className = 'result-box result-red';
+        }
+
+        function hideLoadingIndicator() {
+            loadingDiv.classList.add('hidden');
+        }
+
         uploadBtn.addEventListener('click', async () => {
             resultMessage.textContent = 'Pending';
             resultMessage.className = 'result-box result-gray';
@@ -147,45 +197,7 @@
             const formData = new FormData();
             formData.append('uploaded_file', fileInput.files[0]);
 
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Server error: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-
-
-                if (selectedModel === 'binary') {
-                    resultMessage.textContent = data.result === 1 ? 'Yes' : 'No';
-                    resultMessage.className = data.result === 1 ? 'result-box result-green' : 'result-box result-red';
-                } else {
-                    const labels = {
-                        0: "Coastal and marine Ecosystems",
-                        1: "Human and managed",
-                        2: "Mountains, snow and ice",
-                        3: "Rivers, lakes, and soil moisture",
-                        4: "Terrestrial ES"
-                    }
-
-                    let result = []
-                    data.result.forEach(element => {
-                        result.push(labels[element])
-                    });
-
-                    resultMessage.textContent = result.join(',');
-                    resultMessage.className = 'result-box result-green';
-                }
-            } catch (error) {
-                resultMessage.textContent = 'Error';
-                resultMessage.className = 'result-box result-red';
-            } finally {
-                loadingDiv.classList.add('hidden');
-            }
+            await fetchData(endpoint, formData, selectedModel);
         });
     </script>
 </body>

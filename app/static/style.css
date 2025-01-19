@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+.drag-down {
+    animation: drag-down 1s ease-in-out infinite alternate;
+}
+
+@keyframes drag-down {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(10px);
+    }
+}
+
+.result-box {
+    min-width: 8em;
+    min-height: 8em;
+    height: auto;
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25em;
+    font-weight: 600;
+    border: 2px dotted;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-align: center;
+    padding: 1em;
+}
+
+.result-green {
+    border-color: #22c55e;
+    background-color: #22c55e33;
+    color: #22c55e;
+}
+
+.result-red {
+    border-color: #ef4444;
+    background-color: #ef444433;
+    color: #ef4444;
+}
+
+.result-gray {
+    border-color: #6b7280;
+    background-color: #e5e7eb;
+    color: #6b7280;
+}
+
+.file-upload-box {
+    background: radial-gradient(circle, #c7cad0 10%, transparent 10%) 0 0,
+      radial-gradient(circle, #c7cad0 10%, transparent 10%) 20px 20px,
+      radial-gradient(circle, #c7cad0 10%, transparent 10%) 40px 40px;
+    background-size: 60px 60px;
+    /* height: 100vh; */
+    margin: 0;
+}

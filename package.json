@@ -1,0 +1,11 @@
+{
+  "name": "paper2synthesis",
+  "version": "1.0.0",
+  "description": "Evidence Synthesis UI",
+  "main": "script.js",
+  "scripts": {
+    "start": "fastapi dev --app app --reload"
+  },
+  "author": "",
+  "license": "ISC"
+}

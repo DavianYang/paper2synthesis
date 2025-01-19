@@ -1,5 +1,9 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
+from fastapi.requests import Request
+from fastapi.responses import HTMLResponse
 from PIL import Image
 import pytesseract
 import pdfplumber
@@ -7,6 +11,10 @@ import re
 import joblib
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+templates = Jinja2Templates(directory="app/template")
 
 app.add_middleware(
     CORSMiddleware,
@@ -52,6 +60,11 @@ def predict(model_path, uploaded_file):
     prediction = model.predict([prediction_input])
 
     return prediction
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
 
 @app.post("/predict_binary/")
 async def extract_abstract(uploaded_file: UploadFile):

@@ -66,8 +66,8 @@ uploadBtn.addEventListener('click', async () => {
 
     const selectedModel = modelSelect.value;
     const endpoint = selectedModel === 'binary' 
-        ? '${process.env.API_URL}/predict_binary/' 
-        : '${process.env.API_URL}/predict_multilabel/';
+        ? `${window.location.href}predict_binary/`
+        : `${window.location.href}predict_multilabel/`;
 
     const formData = new FormData();
     formData.append('uploaded_file', fileInput.files[0]);

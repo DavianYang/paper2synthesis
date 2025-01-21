@@ -68,7 +68,6 @@ def predict(model_path, uploaded_file):
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-
 @app.post("/predict_binary/")
 async def svm_binary(uploaded_file: UploadFile):
     try:

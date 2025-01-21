@@ -21,7 +21,7 @@ space_url = "https://huggingface.co/spaces/DavianYang/evidence-synthesis/api/pre
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace "*" with a specific domain like ["http://localhost:5500"] for better security
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers

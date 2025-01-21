@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
+from gradio_client import Client
 from PIL import Image
 import pytesseract
 import pdfplumber
@@ -15,6 +16,8 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 templates = Jinja2Templates(directory="app/template")
+
+space_url = "https://huggingface.co/spaces/DavianYang/evidence-synthesis/api/predict"
 
 app.add_middleware(
     CORSMiddleware,
@@ -67,8 +70,7 @@ async def read_root(request: Request):
 
 
 @app.post("/predict_binary/")
-async def extract_abstract(uploaded_file: UploadFile):
-
+async def svm_binary(uploaded_file: UploadFile):
     try:
         prediction = predict('./models/svm_model.pkl', uploaded_file)
         return {"result": prediction[0].item()}
@@ -77,9 +79,20 @@ async def extract_abstract(uploaded_file: UploadFile):
 
 
 @app.post("/predict_multilabel/")
-async def extract_abstract(uploaded_file: UploadFile):
+async def svm_multilabel(uploaded_file: UploadFile):
     try:
         prediction = predict('./models/svm_multi_model.pkl', uploaded_file)
         return {"result": [i for i, _ in enumerate(prediction.squeeze(0).tolist()) if i == 1]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.post("/predict_bert")
+async def bert_binary(uploaded_file: UploadFile):
+    try:
+        prediction_input = read_file(uploaded_file)
+
+        client = Client("DavianYang/evidence-synthesis")
+        result = client.predict(text=prediction_input, api_name="/predict")
+        return {"result": result}
     except Exception as e:
         return {"error": str(e)}

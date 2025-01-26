@@ -12,3 +12,7 @@ Here’s the structure of the notebook:
 1. First, I’ll explore the dataset and create a basic machine learning pipeline.
 2. Next, I’ll train a more advanced model using a supervised SVM classifier.
 3. Finally, I’ll train and evaluate pretrained transformer models.
+
+## Problem: The Challenge of Comprehensive Assessments
+
+In the past, early IPCC reports dealt with only a few hundred or thousand studies on climate change. However, in the most recent assessment, over 300,000 studies were published on the subject ([Callaghan et al., 2020](https://www.nature.com/articles/s41558-019-0684-5)). While these reports have expanded in terms of authors, pages, and references, they haven't kept pace with the sheer growth in the available literature. As a result, the IPCC now cites a much smaller portion of the relevant studies, raising important questions about which studies are chosen and how they are selected.

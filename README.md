@@ -1,5 +1,3 @@
-# paper2synthesis
-
 # Overview
 
 It’s crucial for lawmakers, regulators, and policymakers to base climate decisions on scientific evidence and to assess current climate policies through the lens of this evidence. Evaluating climate policies helps improve regulations, fosters transparency, and builds public trust. It also motivates both public and private sectors to make commitments and take stronger actions.

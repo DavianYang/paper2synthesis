@@ -7,3 +7,7 @@ Academic research offers valuable insights for climate policy evaluation. With t
 ## Problem: The Challenge of Comprehensive Assessments
 
 In the past, early IPCC reports dealt with only a few hundred or thousand studies on climate change. However, in the most recent assessment, over 300,000 studies were published on the subject ([Callaghan et al., 2020](https://www.nature.com/articles/s41558-019-0684-5)). While these reports have expanded in terms of authors, pages, and references, they haven't kept pace with the sheer growth in the available literature. As a result, the IPCC now cites a much smaller portion of the relevant studies, raising important questions about which studies are chosen and how they are selected.
+
+### ⚠️ Note on Performance
+
+This website is hosted on [Render's](https://render.com/) free tier, which may result in a cold start time of over **50 seconds**. This is a limitation of the free hosting plan and does not reflect the application's actual performance on a production-grade server.
